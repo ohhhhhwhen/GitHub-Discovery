@@ -32,7 +32,7 @@ Project is created with:
 ## Files / Running Page
 * Here are some screen shots of the running page from an images folder:
 
- ![Terminal Starting Page](images/Terminal-Start-Page.png)
+ ![Terminal Starting Page](images/Terminal-Starting-Page.png)
 
  ![Terminal Page Info](images/Terminal-Page-Info.png)
 
