@@ -4,7 +4,7 @@
 * [Deployed Repo](#deployed-repo)
 * [Assignment Info](#assignment-info)
 * [Technologies](#technologies)
-* [Files](#files)
+* [Files / Running Pages](#files)
 * [Key Notes](#key-notes)
 
 ## Deployed Repo
@@ -29,7 +29,7 @@ Project is created with:
 * Node.js
 * Puppeteer
 	
-## Files / Running Page
+## Files / Running Pages
 * Here are some screen shots of the running page from an images folder:
 
  ![Terminal Starting Page](images/Terminal-Starting-Page.png)
