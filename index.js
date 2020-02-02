@@ -4,11 +4,15 @@ const fs = require("fs");
 const axios = require("axios");
 const inquirer = require("inquirer");
 const util = require("util");
+const puppeteer = require('puppeteer');
+const {resolve} = require("path");
 const colors = require("./colors");
 const writeFileAsync = util.promisify(fs.writeFile);
 let actualName;
 let userImg;
 let userBio;
+let blogLink;
+let profileLink;
 let userFollowers;
 let useFollowing;
 let userRepos;
@@ -57,9 +61,11 @@ inquirer
         userBio = response.data.bio;
         userLocation = response.data.location;
         locationLink = `https://www.google.com/maps/place/${userLocation}`;
+        profileLink = response.data.html_url;
         userFollowers = response.data.followers;
         useFollowing = response.data.following;
         userRepos = response.data.public_repos;
+        blogLink = `https://github.blog/`;
       })
       .then(function() {
         makeHTML(
@@ -71,8 +77,14 @@ inquirer
           useFollowing,
           userRepos,
           userStars,
-          color
+          color,
+          profileLink,
+          locationLink,
+          blogLink
         );
+
+        console.log("Discovered User's Info!");
+
         writeFileAsync(
           "index.html",
           makeHTML(
@@ -85,19 +97,21 @@ inquirer
             userRepos,
             userStars,
             color,
-            locationLink
+            profileLink,
+            locationLink,
+            blogLink
           ),
           function(err) {
             if (err) {
               return console.error(err);
-            } 
-            else {
-              return console.log("Discovered User Infos!");
             }
+            // console.log("Discovered User's Info!");
           }
         );
       });
+     printPDF();
   });
+
 function makeHTML(
   actualName,
   userImg,
@@ -108,7 +122,9 @@ function makeHTML(
   userRepos,
   userStars,
   color,
-  locationLink
+  profileLink,
+  locationLink,
+  blogLink
 ) {
   return `<!DOCTYPE html>
     <html lang="en">
@@ -119,6 +135,10 @@ function makeHTML(
           rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         />
+        <script
+        src="https://kit.fontawesome.com/ce46380fe9.js"
+        crossorigin="anonymous"
+      ></script>
         <title>Github Discovery</title>
         <style>
         body{
@@ -139,8 +159,15 @@ function makeHTML(
                         <img src="${userImg}" height="250px" width="250px" class="img-responsive img-circle" style="border: solid; border-radius: 50%; border-color:${colors[color].borderColor}">
                         <h2>My name is ${actualName}</h2>
                         <h2>This is my GitHub Overview.</h2>
-                        <a style="font-size: 32px; color: ${colors[color].textColor}; text-decoration: none;" href="${locationLink}" target="_blank">${userLocation}</a>
                         <p>${userBio}</p>
+                        <div class="row">
+                          <div class="col-md-12 d-flex justify-content-between" style="margin-left: 68px;">
+                            <a style="font-size: 32px; color: ${colors[color].textColor}; text-decoration: none;" href="${locationLink}" target="_blank"><i class="fas fa-map-marker-alt"></i> ${userLocation}</a>
+                            <a style="font-size: 32px; color: ${colors[color].textColor}; text-decoration: none;" href="${profileLink}" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                            <a style="font-size: 32px; color: ${colors[color].textColor}; text-decoration: none;" href="${blogLink}" target="_blank"><i class="fas fa-blog"></i> Blog</a>
+                            <a></a>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -184,12 +211,16 @@ function makeHTML(
               </div>
             </div>
         </div>
-        <script
-        type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"
-      ></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
       </body>
     </html>`;
 }
+
+async function printPDF() {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto(`file://${resolve(__dirname, `index.html`)}`, {waitUntil: `networkidle0`});
+  const pdf = await page.pdf({path:`resume.pdf`, format: 'A4', printBackground: true });
+ 
+  await browser.close();
+  return pdf
+};
