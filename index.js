@@ -158,7 +158,7 @@ function makeHTML(
                       <div class="card-body" style="color:${colors[color].textColor}; background-color:${colors[color].cardBackground};">
                         <img src="${userImg}" height="250px" width="250px" class="img-responsive img-circle" style="border: solid; border-radius: 50%; border-color:${colors[color].borderColor}">
                         <h2>My name is ${actualName}</h2>
-                        <h2>This is my GitHub Overview.</h2>
+                        <h2>This is my GitHub Overview</h2>
                         <p>${userBio}</p>
                         <div class="row">
                           <div class="col-md-12 d-flex justify-content-between" style="margin-left: 68px;">
